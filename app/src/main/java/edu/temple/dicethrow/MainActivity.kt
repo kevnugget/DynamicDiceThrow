@@ -1,10 +1,14 @@
 package edu.temple.dicethrow
 
 import android.os.Bundle
+import android.view.View
+import android.widget.Button
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 
 
 /*
@@ -19,6 +23,9 @@ The Activity layout files for both Portrait and Landscape are already provided
 */
 
 class MainActivity : AppCompatActivity(), ButtonFragment.ButtonInterface {
+
+    private var hasTwoContainers = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -27,6 +34,26 @@ class MainActivity : AppCompatActivity(), ButtonFragment.ButtonInterface {
             - Show _only_ ButtonFragment if portrait
             - show _both_ fragments if Landscape
           */
+        val dieViewModel = ViewModelProvider(this)[DieViewModel::class.java]
+        hasTwoContainers = findViewById<View>(R.id.container2) != null
+
+        val buttonFragment = ButtonFragment()
+        val dieFragment = DieFragment()
+
+        if (savedInstanceState == null) {
+            if (!hasTwoContainers) {
+                supportFragmentManager.beginTransaction().add(R.id.container1, buttonFragment).commit()
+            }
+        }
+        if (hasTwoContainers) {
+            supportFragmentManager.beginTransaction().replace(R.id.container1, buttonFragment).add(R.id.container2, dieFragment).commit()
+        }
+
+        dieViewModel.getDieRoll().observe(this) {
+            if(!hasTwoContainers) {
+                supportFragmentManager.beginTransaction().replace(R.id.container1, dieFragment).setReorderingAllowed(true).addToBackStack(null).commit()
+            }
+        }
     }
 
     /* TODO 2: switch fragments if die rolled and in portrait (no need to switch fragments if Landscape)
