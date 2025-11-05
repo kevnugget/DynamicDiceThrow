@@ -53,6 +53,9 @@ class MainActivity : AppCompatActivity(), ButtonFragment.ButtonInterface {
             if(!hasTwoContainers) {
                 supportFragmentManager.beginTransaction().replace(R.id.container1, dieFragment).setReorderingAllowed(true).addToBackStack(null).commit()
             }
+            if (hasTwoContainers) {
+                supportFragmentManager.beginTransaction().replace(R.id.container1, buttonFragment).replace(R.id.container2, dieFragment).setReorderingAllowed(true).addToBackStack(null).commit()
+            }
         }
     }
 
